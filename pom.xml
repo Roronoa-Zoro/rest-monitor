@@ -20,6 +20,9 @@
     <junit.version>4.12</junit.version>
     <spring.version>4.3.3.RELEASE</spring.version>
     <netty.version>4.1.6.Final</netty.version>
+    <eureka.version>1.6.1</eureka.version>
+    <curator.version>3.2.0</curator.version>
+    <lombok.version>1.16.10</lombok.version>
   </properties>
 
 
@@ -61,6 +64,22 @@
         <artifactId>spring-tx</artifactId>
         <version>${spring.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.netflix.eureka</groupId>
+        <artifactId>eureka-client</artifactId>
+        <version>${eureka.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.curator</groupId>
+        <artifactId>curator-framework</artifactId>
+        <version>${curator.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>${lombok.version}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 
