@@ -11,11 +11,11 @@
 		http://www.springframework.org/schema/context/spring-context.xsd">
 
     <context:annotation-config />
-    <context:component-scan base-package="com.illegalaccess.rest.monitor.client" />
+    <context:component-scan base-package="com.illegalaccess.rest.monitor.core" />
     <aop:aspectj-autoproxy  proxy-target-class="true"/>
 
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <property name="location" value="client-config.properties" />
+        <property name="location" value="config.properties" />
     </bean>
 
 </beans>

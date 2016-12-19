@@ -15,8 +15,8 @@ import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
 import io.netty.handler.codec.string.StringDecoder;
 import lombok.extern.slf4j.Slf4j;
-
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Administrator on 2016/12/16.
@@ -24,10 +24,11 @@ import java.util.List;
 @Slf4j
 public class TCPRemoteClient implements RemoteClient {
 
-    private ChannelFuture f;
+    private Channel channel;
+    EventLoopGroup group = new NioEventLoopGroup(1, new StatThreadFactory());
+
     private Bootstrap b;
-    private ChannelHandlerContext ctx;
-    private TCPClientHandler clientHandler = new TCPClientHandler();
+    private TCPClientHandler clientHandler = new TCPClientHandler(this);
 
     private ServiceDetector serviceDetector;
 
@@ -35,12 +36,8 @@ public class TCPRemoteClient implements RemoteClient {
         this.serviceDetector = serviceDetector;
     }
 
-    public void setCtx(ChannelHandlerContext ctx) {
-        this.ctx = ctx;
-    }
-
     public void startClient(RegisterHost registerHost) {
-        EventLoopGroup group = new NioEventLoopGroup(1, new StatThreadFactory());
+        log.info("startClient...");
         try {
             b = new Bootstrap();
             b.group(group)
@@ -59,10 +56,34 @@ public class TCPRemoteClient implements RemoteClient {
                             p.addLast(clientHandler);
                         }
                     });
-            connectAndWait(registerHost);
+            doConnect(registerHost);
         } finally {
             // Shut down the event loop to terminate all threads.
-            group.shutdownGracefully();
+            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    group.shutdownGracefully();
+                }
+            }));
+//            group.shutdownGracefully();
+        }
+    }
+
+    private void doConnect(RegisterHost registerHost) {
+        try {
+            ChannelFuture f = b.connect(registerHost.getRemoteHostIP(), registerHost.getRemoteHostPort()).sync();
+            f.addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture future) throws Exception {
+                    if(!future.isSuccess()) {//if is not successful, reconnect
+                        future.channel().close();
+                        f.channel().eventLoop().schedule(() -> doConnect(serviceDetector.discoverRemoteHost()), 1, TimeUnit.SECONDS);
+                    }
+                    channel = f.channel();
+                }
+            });
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
@@ -73,21 +94,7 @@ public class TCPRemoteClient implements RemoteClient {
     public void reConnect() {
         RegisterHost registerHost = serviceDetector.discoverRemoteHost();
 
-        connectAndWait(registerHost);
-    }
-
-    private void connectAndWait(RegisterHost registerHost) {
-        // Start the client.
-        try {
-            f = b.connect(registerHost.getRemoteHostIP(), registerHost.getRemoteHostPort()).sync();
-
-            log.info("client connect to host:{}, port:{}", registerHost.getRemoteHostIP(), registerHost.getRemoteHostPort());
-
-            // Wait until the connection is closed.
-            f.channel().closeFuture().sync();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        doConnect(registerHost);
     }
 
     public void sendData(List<InvocationStatVO> statData) {
@@ -109,7 +116,7 @@ public class TCPRemoteClient implements RemoteClient {
                 builder.addStatVOList(voBuilder.build());
                 voBuilder.clear();
             }
-            ctx.writeAndFlush(builder.build());
+            channel.writeAndFlush(builder.build());
         }catch (Exception e) {
             log.error("report data fails", e);
             reConnect();
