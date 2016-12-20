@@ -109,11 +109,11 @@ public class TCPRemoteClient implements RemoteClient {
                 voBuilder.setApp(data.getApp());
                 voBuilder.setHost(data.getHost());
                 voBuilder.setMethodName(data.getMethodName());
-                voBuilder.setInvokeFailureTimes(data.getInvokeFailureTimes());
+                voBuilder.setInvokeFailureTimes(data.getInvokeFailureTimes().get());
                 voBuilder.setInvokeMaxCost(data.getInvokeMaxCost());
                 voBuilder.setInvokeMinCost(data.getInvokeMinCost());
-                voBuilder.setInvokeTimes(data.getInvokeTimes());
-                voBuilder.setInvokeTotalCost(data.getInvokeTotalCost());
+                voBuilder.setInvokeTimes(data.getInvokeTimes().get());
+                voBuilder.setInvokeTotalCost(data.getInvokeTotalCost().get());
                 voBuilder.setReportTimestamp(data.getReportTimestamp());
                 builder.addStatVOList(voBuilder.build());
                 voBuilder.clear();
