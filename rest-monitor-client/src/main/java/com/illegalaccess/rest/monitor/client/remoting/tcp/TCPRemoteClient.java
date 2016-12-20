@@ -13,6 +13,7 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.codec.protobuf.ProtobufEncoder;
+import io.netty.handler.codec.protobuf.ProtobufVarint32LengthFieldPrepender;
 import io.netty.handler.codec.string.StringDecoder;
 import lombok.extern.slf4j.Slf4j;
 import java.util.List;
@@ -52,6 +53,7 @@ public class TCPRemoteClient implements RemoteClient {
                             p.addLast(new StringDecoder());
 //                            p.addLast(new ProtobufVarint32FrameDecoder());
 //                            p.addLast(new ProtobufDecoder(InvocationStatProto.InvocationStatVO.getDefaultInstance()));
+                            p.addLast(new ProtobufVarint32LengthFieldPrepender());
                             p.addLast(new ProtobufEncoder());
                             p.addLast(clientHandler);
                         }
