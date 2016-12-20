@@ -1,6 +1,8 @@
 package com.illegalaccess.rest.monitor.client.aop;
 
 import com.illegalaccess.rest.monitor.client.vo.InvocationStatVO;
+
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -22,5 +24,9 @@ public enum StatContainer {
 
     public void clear() {
         container = new ConcurrentHashMap<>();
+    }
+
+    public Collection<InvocationStatVO> getCurrentData() {
+        return container.values();
     }
 }
