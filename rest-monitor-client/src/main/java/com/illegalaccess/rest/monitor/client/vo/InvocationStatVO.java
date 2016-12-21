@@ -3,9 +3,7 @@ package com.illegalaccess.rest.monitor.client.vo;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -53,8 +51,9 @@ public class InvocationStatVO {
         costList.add(cost);
     }
 
-    public void populateMaxAndMinCost() {
+    public void populateMaxAndMinCostAndReportTime(long currentDateTime) {
         this.invokeMaxCost = Collections.max(costList);
         this.invokeMinCost = Collections.min(costList);
+        this.reportTimestamp = currentDateTime;
     }
 }

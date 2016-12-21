@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:annotation-config />
+    <context:component-scan base-package="com.illegalaccess.rest.monitor.client" />
+    <aop:aspectj-autoproxy  proxy-target-class="true"/>
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="location" value="classpath:monitor-client-config.properties" />
+    </bean>
+
+    <bean class="com.illegalaccess.rest.monitor.client.scheduler.SchedulerTask" init-method="initTask">
+        <property name="periodBySecond" value="10" />
+        <property name="reporter" ref="statReporter" />
+    </bean>
+
+    <bean id="statAOP" class="com.illegalaccess.rest.monitor.client.aop.InvocationStatAOP">
+        <property name="app" value="rest-sample" />
+    </bean>
+
+    <!-- AOP配置 -->
+    <aop:config>
+        <!-- 声明一个切面,并注入切面Bean,相当于@Aspect -->
+        <aop:aspect id="simpleAspect" ref="statAOP">
+            <!-- 配置一个切入点,相当于@Pointcut -->
+            <aop:pointcut expression="execution(* com.illegalaccess.rest.monitor.sample.controller.*.*(..))" id="simplePointcut"/>
+            <!-- 配置通知,相当于@Before、@After、@AfterReturn、@Around、@AfterThrowing -->
+            <aop:around pointcut-ref="simplePointcut" method="statGeneralInvocationData" />
+            <aop:after-throwing pointcut-ref="simplePointcut" method="statFailureInvocationData" throwing="ex"/>
+        </aop:aspect>
+    </aop:config>
+</beans>

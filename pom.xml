@@ -9,6 +9,7 @@
         <module>rest-monitor-client</module>
         <module>rest-monitor-core</module>
         <module>rest-monitor-web</module>
+        <module>rest-monitor-sample</module>
     </modules>
     <packaging>pom</packaging>
 
