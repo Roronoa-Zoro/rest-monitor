@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by Administrator on 2016/12/19.
+ * Created by Jimmy Li on 2016/12/19.
  */
 @Slf4j
 @Service

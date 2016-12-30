@@ -7,7 +7,7 @@ import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**
- * Created by Administrator on 2016/12/16.
+ * Created by Jimmy Li on 2016/12/16.
  */
 @Component
 public class ServerLifecycle {

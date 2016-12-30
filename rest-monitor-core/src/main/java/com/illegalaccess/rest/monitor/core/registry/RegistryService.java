@@ -1,7 +1,7 @@
 package com.illegalaccess.rest.monitor.core.registry;
 
 /**
- * Created by Administrator on 2016/12/19.
+ * Created by Jimmy Li on 2016/12/19.
  * 注册服务
  */
 public interface RegistryService {
